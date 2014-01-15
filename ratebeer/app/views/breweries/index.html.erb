@@ -12,7 +12,6 @@
   </thead>
 
   <tbody>
-   <p> Number of breweries: <%= @breweries.count %>!</p>
    <p> Number of breweries: <%= @breweries.count %> </p> 
     <% @breweries.each do |brewery| %>
       <tr>
@@ -27,5 +26,5 @@
 </table>
 
 <br>
-
 <%= link_to 'New Brewery', new_brewery_path %>
+<h3><%= link_to 'list of beers', beers_path %></h3>
