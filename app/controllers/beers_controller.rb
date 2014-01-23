@@ -5,8 +5,6 @@ class BeersController < ApplicationController
   # GET /beers.json
   def index
     @beers = Beer.all
-  
- 
   end
 
   # GET /beers/1
@@ -23,6 +21,8 @@ class BeersController < ApplicationController
 
   # GET /beers/1/edit
   def edit
+    @breweries = Brewery.order(:name).all
+    @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter", "lowalcohol"]
   end
 
   # POST /beers
