@@ -28,6 +28,8 @@ class BeersController < ApplicationController
   # POST /beers
   # POST /beers.json
   def create
+    @breweries = Brewery.order(:name).all
+    @styles = ["Weizen", "Lager", "Pale ale", "IPA", "Porter", "lowalcohol"]
     @beer = Beer.new(beer_params)
 
     respond_to do |format|
@@ -37,6 +39,7 @@ class BeersController < ApplicationController
       else
         format.html { render action: 'new' }
         format.json { render json: @beer.errors, status: :unprocessable_entity }
+        
       end
     end
   end

@@ -1,7 +1,14 @@
 class Rating < ActiveRecord::Base
+  
+   validates :score, numericality: { greater_than_or_equal_to: 1,
+                                    less_than_or_equal_to: 50,
+                                    only_integer: true }
+   
+  
   belongs_to :beer
-  def to_s
-     beer.name + " " + "score: " + score.to_s
-   end
+  belongs_to :user   # rating kuuluu myšs kŠyttŠjŠŠn
 
+  def to_s
+    "#{beer.name} #{score}"
+  end
 end
