@@ -3,7 +3,7 @@
 <h2>
   <%= @brewery.name %>
 </h2>
-<h3>Established at <%= @brewery.year%></h3>
+<h3>Established year: <%= @brewery.year%></h3>
 <p>Number of beers: <%= @brewery.beers.count%></p>
 <ul>
  <% @brewery.beers.each do |beer| %>
