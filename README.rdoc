@@ -1,3 +1,7 @@
 Link to ratebeer:
 
 http://floating-atoll-7547.herokuapp.com/breweries/
+
+Link to travis:
+
+https://travis-ci.org/tadic/Ruby
