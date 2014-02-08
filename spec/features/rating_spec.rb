@@ -66,7 +66,6 @@ describe "Rating" do
         page.all('a')[10].click
         expect(page).not_to have_content 'iso 3 13 delete'
         expect(page).to have_content 'Pekka Has made 1 rating'
-        save_and_open_page
         
     end
 
