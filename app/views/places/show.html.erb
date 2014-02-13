@@ -1,0 +1,11 @@
+<p id="notice"><%= notice %></p
+
+<% if @place %>
+    <strong><%= @place.name %></strong>
+    <p><%= @place.street %></p>
+    <p><%= @place.zip %> <%= @place.city%></p>
+    <br>
+    <iframe frameborder="0" scrolling="no" width="430" height="358" src='<%= @place.blogmap %>' name="map" id="imgbox">
+        <p>iframes are not supported by your browser.</p>
+    </iframe><br />  
+<% end %>

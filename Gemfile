@@ -23,6 +23,8 @@ group :test do
 end
 gem 'byebug', group: [:development, :test]
 gem 'simplecov', require: false
+
+gem 'httparty'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'
 
@@ -32,6 +34,13 @@ gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .js.coffee assets and views
 gem 'coffee-rails', '~> 4.0.0'
 
+
+gem 'webmock'
+
+
+
+
+gem "rails-settings-cached", "0.3.1"
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 

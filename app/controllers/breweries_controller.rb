@@ -14,6 +14,11 @@ class BreweriesController < ApplicationController
   def show
   end
 
+   def nayta
+     @brewery = Brewery.find(params[:panimo_id])
+    # @breweries = Brewery.all
+     render :show
+   end
   # GET /breweries/new
   def new
     @brewery = Brewery.new

@@ -19,8 +19,12 @@ Ratebeer::Application.routes.draw do
   delete 'signout', to: 'sessions#destroy'
   
   root 'breweries#index'
+  get 'panimo/:panimo_id', to: 'breweries#nayta'
   get '/', to: 'breweries#index'
   get 'kaikki_bisset', to: 'beers#index'
+  resources :places, only:[:index, :show]
+ 
+  post 'places', to:'places#search'
   
   # get 'ratings', to: 'ratings#index'
   
