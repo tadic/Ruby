@@ -1,7 +1,6 @@
 
 
-
-app_link: http://floating-atoll-7547.herokuapp.com
+app_link: http://boiling-ravine-6156.herokuapp.com
 
 
 travis: https://travis-ci.org/tadic/Ruby
