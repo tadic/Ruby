@@ -1,28 +1,26 @@
 require 'spec_helper'
-BeerClub
-BeerClubsController
-Membership
-MembershipsController
 
 describe Beer do
-  it "can not exists without name" do
-    beer = Beer.new style:"style1"
+  it "is saved when name and style are nonempty" do
+    beer = Beer.create name:"Karhu", style:FactoryGirl.create(:style)
 
-    expect(beer).not_to be_valid
+    expect(beer).to be_valid
+    expect(Beer.count).to eq(1)
   end
 
-  it "is not saved without a style" do
-    beer = Beer.create name:"Olut1"
-    expect(beer).not_to be_valid
-    expect(Beer.count).to eq(0)
+  describe "is not saved" do
+    it "if name missing" do
+      beer = Beer.create style:FactoryGirl.create(:style)
 
-  end
-  
-    it "is saved with correct name and style" do
-      beer = Beer.create name:"Beer1", style:"Style1"
-
-      expect(beer).to be_valid
-      expect(Beer.count).to eq(1)
+      expect(beer).not_to be_valid
+      expect(Beer.count).to eq(0)
     end
 
+    it "if style missing" do
+      beer = Beer.create name:"Karhu"
+
+      expect(beer).not_to be_valid
+      expect(Beer.count).to eq(0)
+    end
+  end
 end

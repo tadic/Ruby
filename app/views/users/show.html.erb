@@ -1,41 +1,46 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Username:</strong>
-  <%= @user.username %>
-</p>
+<h2> <%= @user.username %></h2>
+
 <% if @user.ratings.empty? %>
-Has not made any rating!
+    <p>has not yet made ratings</p>
 <% else %>
- Has made <%= pluralize(@user.ratings.count, "rating") %> , average = <%= @user.average_rating%>
- <br>Favorite style: <%= @user.favorite_style %>
- <br>Favorite brewery: <%= @user.favorite_brewery %>
+    <p>has made <%= pluralize( @user.ratings.count, 'rating') %></p>
 <% end %>
-</p>
-<strong>ratings:</strong>
+
+<% if @user.beer_clubs.any? %>
+  <p>
+  member of
+    <% @user.beer_clubs.each do |club| %>
+      <%= link_to club.name, club %>
+    <% end %>
+  </p>
+<% end %>
+
+<% if @user.ratings.any? %>
+    <p>Favorite beer: <%= link_to @user.favorite_beer, @user.favorite_beer %> </p>
+    <p>Favorite brewery: <%= link_to @user.favorite_brewery.name, @user.favorite_brewery %> </p>
+    <p>Preferred style: <%= link_to @user.favorite_style, @user.favorite_style %> </p>
+<% end %>
+
+<h3>ratings</h3>
+
+<% if @user.ratings.empty? %>
+    <p>none so far</p>
+<% end %>
+
 <ul>
-    <% @user.ratings.each do |rating| %>
-      <li> 
-        <%= rating %> 
+  <% @user.ratings.each do |rating| %>
+      <li> <%= rating %>
         <% if @user == current_user %>
-            <%= link_to 'delete', rating, method: :delete, data: { confirm: 'Are you sure?' } %> 
+            <%= link_to 'delete', rating, method: :delete, data: { confirm: 'Are you sure?' } %>
         <% end %>
       </li>
-    <% end %>
-  </ul>
-<strong>Beers Clubs:</strong>
-<ul>
-  <% @user.memberships.each do |m| %>
-    <li>
-        <%= m.beer_club %>
-        <% if @user == current_user %>
-               <%= link_to 'delete', m, :method => :delete, data: { confirm: 'Are you sure?' } %>
-        <% end %>
-    </li>
   <% end %>
 </ul>
- <% if @user == current_user %>
-    <%= link_to 'Edit', edit_user_path(@user) %> |
-    <%= link_to 'Destroy', user_path, method: :delete, data: { confirm: 'Are you sure?' } %> |
+
+<% if @user == current_user %>
+  <%= link_to 'Edit', edit_user_path(@user), class:'btn btn-default' %>
+  <br><br>
+  <%= link_to 'Remove user account', @user, method: :delete, data: { confirm: 'Are you sure?' }, class:'btn btn-danger' %>
 <% end %>
-<%= link_to 'Back', users_path %>

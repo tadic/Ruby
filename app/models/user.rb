@@ -1,75 +1,58 @@
 class User < ActiveRecord::Base
   include RatingAverage
+
+  validates :username, uniqueness: true,
+                       length: { in: 3..15 }
+
+  validates :password, length: { minimum: 3 },
+                       format: { with: /.*(\d.*[A-Z]|[A-Z].*\d).*/,
+                                 message: "should contain a uppercase letter and a number" }
+
+
   has_secure_password
-  
-   validates :username, uniqueness: true
 
-   validates :username, length: { minimum: 3, maximum: 15}
-   validates :password, :format => {:with => /\A.*(?=.{4,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*\z/,
-                                    message: "must be at least 4 characters and include one number and one big letter."}
-                        
-   
-   has_many :ratings, dependent: :destroy
-   has_many :memberships, dependent: :destroy
-   has_many :beerclubs, through: :memberships, source: :beer_club
-   has_many :beers, through: :ratings
+  has_many :ratings, dependent: :destroy
+  has_many :beers, through: :ratings
+  has_many :memberships, dependent: :destroy
+  has_many :beer_clubs, through: :memberships
 
-
-  
-  def to_s
-      username.to_s
+  def favorite_beer
+    return nil if ratings.empty?
+  #  ratings.order(score: :desc).limit(1).first.beer
+  ratings.sort_by{ |r| r.score }.last.beer
   end
-  
- 
-    def favorite_beer
-      return nil if ratings.empty?   # palautetaan nil jos reittauksia ei ole
-       ratings.order(score: :desc).limit(1).first.beer 
+
+  def favorite_brewery
+    favorite :brewery
+  end
+
+  def favorite_style
+    favorite :style
+  end
+  def self.top(n)
+    sorted_by_rating_in_desc_order = User.all.sort_by{ |b| -(b.ratings.count||0) }
+    result = sorted_by_rating_in_desc_order.first(n)
+    return result
+  end
+
+  private
+
+  def favorite(category)
+    return nil if ratings.empty?
+    rating_pairs = rated(category).inject([]) do |pairs, item|
+      pairs << [item, rating_average(category, item)]
     end
-    
-    def get_style
-      styles_count = Hash.new
-      styles_values = Hash.new
-      ratings.each {|e|
-        if (styles_count[e.beer.style] == nil)
-          styles_count[e.beer.style] = 1
-          styles_values[e.beer.style] =  e.score
-        else
-            styles_count[e.beer.style] = styles_count[e.beer.style] + 1 
-            styles_values[e.beer.style] =  styles_values[e.beer.style] + e.score
-        end
-      }
-      styles_values.each {|key, value|
-        styles_values[key] = value / styles_count[key]
-      }
-      return styles_values.key(styles_values.values.max)
-    end
-    
-    def get_brew
-      styles_count = Hash.new
-      styles_values = Hash.new
-      ratings.each {|e|
-        name = e.beer.brewery.name
-        if (styles_count[name] == nil)
-          styles_count[name] = 1
-          styles_values[name] =  e.score
-        else
-            styles_count[name] = styles_count[name] + 1 
-            styles_values[name] =  styles_values[name] + e.score
-        end
-      }
-      styles_values.each {|key, value|
-        styles_values[key] = value / styles_count[key]
-      }
-      return styles_values.key(styles_values.values.max)
-    end
-    
-    def favorite_style
-      return nil if ratings.empty?   # palautetaan nil jos reittauksia ei ole
-      get_style
-    end
-    
-    def favorite_brewery
-      return nil if ratings.empty?   # palautetaan nil jos reittauksia ei ole
-      get_brew
-    end
+    rating_pairs.sort_by { |s| s.last }.last.first
+  end
+
+  def rated(category)
+    ratings.map{ |r| r.beer.send(category) }.uniq
+  end
+
+  def rating_average(category, item)
+    ratings_of_item = ratings.select{ |r|r.beer.send(category)==item }
+    return 0 if ratings_of_item.empty?
+    ratings_of_item.inject(0.0){ |sum ,r| sum+r.score } / ratings_of_item.count
+  end
+
 end

@@ -1,26 +1,19 @@
 class BeermappingApi
- 
   def self.places_in(city)
     city = city.downcase
-    puts city
-    Rails.cache.fetch(city,:expires_in => 60.minutes.from_now) { fetch_places_in(city) }
-    place = Rails.cache.fetch(city)
-   # Rails.cache.write('last_city', Rails.cache.fetch(city))
-    Rails.cache.write('last_city', place)
-    return Rails.cache.fetch(city) 
+    Rails.cache.fetch(city, expires_in:expiry_time) { fetch_places_in(city) }
   end
 
-  def self.place_with_id(place_id)
-   places = Rails.cache.fetch('last_city')
-   places.find {|item| item.id == place_id}
+  def self.find(id, city)
+    places_in(city).select{ |p| p.id==id.to_s }.first
   end
-  
+
+  private
+
   def self.fetch_places_in(city)
-    WebMock.disable!
     url = "http://beermapping.com/webservice/loccity/#{key}/"
 
-    response = HTTParty.get("#{url}#{ERB::Util.url_encode(city)}")
-   
+    response = HTTParty.get "#{url}#{ERB::Util.url_encode(city)}"
     places = response.parsed_response["bmp_locations"]["location"]
 
     return [] if places.is_a?(Hash) and places['id'].nil?
@@ -32,7 +25,10 @@ class BeermappingApi
   end
 
   def self.key
-    #Settings.beermapping_apikey
-      "3629bc674993e2621dc22561224cff6b"
+    Settings.beermapping_apikey
+  end
+
+  def self.expiry_time
+    1.week
   end
 end

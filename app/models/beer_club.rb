@@ -1,9 +1,8 @@
 class BeerClub < ActiveRecord::Base
   has_many :memberships
-  has_many :users, through: :memberships
-  
-    def to_s
-      name + " - members:(" + users.count.to_s + ")"
-    end
-  
+  has_many :members, through: :memberships, source: :user
+
+  def member?(user)
+    members.include? user
+  end
 end

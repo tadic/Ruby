@@ -15,25 +15,25 @@ class MembershipsController < ApplicationController
   # GET /memberships/new
   def new
     @membership = Membership.new
-    @beer_clubs = BeerClub.all
+    @clubs = BeerClub.all.reject{ |b| b.members.include? current_user }
   end
 
   # GET /memberships/1/edit
   def edit
-        @beer_clubs = BeerClub.all
   end
 
   # POST /memberships
   # POST /memberships.json
   def create
-    @membership = Membership.new params.require(:membership).permit(:beer_club_id)
-      @beer_clubs = BeerClub.all
+    @membership = Membership.new(membership_params)
+    @membership.user = current_user
+
     respond_to do |format|
       if @membership.save
-        current_user.memberships << @membership
-        format.html { redirect_to :back, notice: current_user.to_s + ', welcome to the club!' }
+        format.html { redirect_to :back, notice: "#{current_user.username}, welcome to the club!" }
         format.json { render action: 'show', status: :created, location: @membership }
       else
+        @clubs = BeerClub.all.reject{ |b| b.members.include? current_user }
         format.html { render action: 'new' }
         format.json { render json: @membership.errors, status: :unprocessable_entity }
       end
@@ -59,7 +59,7 @@ class MembershipsController < ApplicationController
   def destroy
     @membership.destroy
     respond_to do |format|
-      format.html { redirect_to :back }
+      format.html { redirect_to memberships_url }
       format.json { head :no_content }
     end
   end

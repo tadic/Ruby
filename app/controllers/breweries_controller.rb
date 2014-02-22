@@ -1,24 +1,33 @@
 class BreweriesController < ApplicationController
   before_action :set_brewery, only: [:show, :edit, :update, :destroy]
-  before_filter :authenticate, :only => [:destroy]
-  
-  
+  before_action :ensure_that_signed_in, except: [:index, :show]
+  before_action :ensure_that_signed_in_as_admin, only: [:destroy]
+
   # GET /breweries
   # GET /breweries.json
-  def index
-    @breweries = Brewery.all
+ def index
+    @active_breweries = Brewery.active
+    @retired_breweries = Brewery.retired
+  end
+ 
+ 
+ def toggle_activity
+    brewery = Brewery.find(params[:id])
+    brewery.update_attribute :active, (not brewery.active)
+
+    new_status = brewery.active? ? "active" : "retired"
+
+    redirect_to :back, notice:"brewery activity status changed to #{new_status}"
   end
 
   # GET /breweries/1
   # GET /breweries/1.json
   def show
   end
+  
+  def brewlist
+  end
 
-   def nayta
-     @brewery = Brewery.find(params[:panimo_id])
-    # @breweries = Brewery.all
-     render :show
-   end
   # GET /breweries/new
   def new
     @brewery = Brewery.new
@@ -69,15 +78,6 @@ class BreweriesController < ApplicationController
   end
 
   private
-  
-  def authenticate
-    admin_accounts = { "admin" => "secret", "pekka" => "beer", "arto" => "foobar", "matti" => "ittam"}
-    authenticate_or_request_with_http_basic do |username, password|
-      admin_accounts.has_key?(username) and admin_accounts.fetch(username) == password
-      #  username == "admin" and password == "secret"
-    end
-  end
-  
     # Use callbacks to share common setup or constraints between actions.
     def set_brewery
       @brewery = Brewery.find(params[:id])
@@ -85,6 +85,7 @@ class BreweriesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def brewery_params
-      params.require(:brewery).permit(:name, :year)
+      params.require(:brewery).permit(:name, :year, :active)
     end
+
 end
